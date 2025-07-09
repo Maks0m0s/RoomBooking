@@ -1,0 +1,13 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-body">
+        <h3 class="card-title">{{ room.name }}</h3>
+        <p class="card-text">Capacity: {{ room.capacity }}</p>
+        <img src="{% static room.photo %}" alt="Room Photo" height="400px" width="auto">
+        <p class="card-text price"><span>{{ room.price }}€</span> per hour</p>
+    </div>
+</div>
+{% endblock %}
