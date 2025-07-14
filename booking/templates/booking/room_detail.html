@@ -5,9 +5,15 @@
 <div class="card shadow">
     <div class="card-body">
         <h3 class="card-title">{{ room.name }}</h3>
+        <p class="card-text">Category: {{ room.category.name }}</p>
         <p class="card-text">Capacity: {{ room.capacity }}</p>
-        <img src="{% static room.photo %}" alt="Room Photo" height="400px" width="auto">
-        <p class="card-text price"><span>{{ room.price }}€</span> per hour</p>
+        {% if room.photo %}
+            <img src="{{ room.photo.url }}" alt="Room Photo" height="400px" width="auto">
+        {% else %}
+            <p>(No photo available.)</p>
+        {% endif %}
+        <p class="card-text description">Description: {{ room.description }}</p>
+        <a href="{% url 'rooms_by_category' room.category.id %}" class="btn btn-primary">Back</a>
     </div>
 </div>
 {% endblock %}

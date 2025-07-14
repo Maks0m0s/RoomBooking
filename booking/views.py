@@ -1,20 +1,18 @@
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
-from django.utils import timezone
+from django.shortcuts import render, get_object_or_404
+from .models import Room, Category
 
+def get_categories(request):
+    categories = Category.objects.all()
+    return render(request, 'booking/categories_list.html', {'categories':categories})
 
-ROOMS = [
-    {"id": 1, "name": "Big Meeting Room", "capacity": 20, "photo": "booking/img/meeting-room1.jpg", "price":80},
-    {"id": 2, "name": "Personal Meeting Room", "capacity": 3, "photo": "booking/img/meeting-room2.jpeg", "price":30},
-    {"id": 3, "name": "Team Meeting Room", "capacity": 6, "photo": "booking/img/meeting-room3.jpg", "price":50},
-    {"id": 4, "name": "Relax-Play Room", "capacity": 8, "photo": "booking/img/meeting-room4.jpg", "price":60},
-]
-
-def get_rooms(request):
-    return render(request, 'booking/rooms_list.html', {'rooms':ROOMS, 'now': timezone.now})
+def rooms_by_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    rooms = category.rooms.all()
+    return render(request, 'booking/rooms_list.html', {'rooms':rooms, 'category':category})
 
 def get_room(request, room_id):
-    room = next((room for room in ROOMS if room["id"] == room_id), None)
+    room = get_object_or_404(Room, id=room_id)
     if room:
         return render(request, 'booking/room_detail.html', {'room':room})
     else:

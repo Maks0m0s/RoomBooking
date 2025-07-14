@@ -1,0 +1,12 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+<h2>Categories (total : {{ categories|length }})</h2>
+{% for category in categories %}
+<div class="card category">
+    <a href="{% url 'rooms_by_category' category.id %}" class="card-title btn">{{ category.name }}</a>
+</div>
+{% empty %}
+<p class="card-title">There isn't any category.</p>
+{% endfor %}
+{% endblock %}

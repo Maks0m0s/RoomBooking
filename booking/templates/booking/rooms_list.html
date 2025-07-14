@@ -1,8 +1,7 @@
 {% extends 'booking/base.html' %}
 
 {% block content %}
-<h2>Rooms List (total : {{ rooms|length }})</h2>
-
+<h2>{{ category.name }} :</h2>
 <div class="row">
     {% for room in rooms %}
     <div class="col-md-4 mb-3">
@@ -10,8 +9,6 @@
             <div class="card-body">
 
                 <h5 class="card-title">{{ room.name|upper }}</h5>
-
-                <p class="card-text">{{ room.description|lower }}</p>
 
                 {% if room.capacity >= 5 %}
                     <p><strong>Big room</strong></p>
@@ -27,7 +24,5 @@
     <p>There isn't any room.</p>
     {% endfor %}
 </div>
-
-<p>Today's date: {{ now|date:"d.m.Y H:i" }}</p>
 
 {% endblock %}

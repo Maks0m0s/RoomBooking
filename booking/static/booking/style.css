@@ -69,10 +69,9 @@ body {
     gap: 2rem;
     flex-wrap: wrap;
 }
-.price {
-    font-weight: bold;
+.description {
     margin-top: 20px;
 }
-.price span {
-    color: #21bf33;
+.category {
+    margin: 5px 0;
 }
