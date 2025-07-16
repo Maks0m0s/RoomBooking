@@ -5,20 +5,39 @@
 <div class="row">
     {% for room in rooms %}
     <div class="col-md-4 mb-3">
-        <div class="card">
-            <div class="card-body">
+        {% if not room.reserved %}
+            <div class="card">
+                <div class="card-body">
 
-                <h5 class="card-title">{{ room.name|upper }}</h5>
+                    <h5 class="card-title">{{ room.name|upper }}</h5>
+                    <p style="color : green"><strong>Free</strong></p>
+                    <p>Rating: <strong>{{ room.rating }}</strong>/5</p>
+                    {% if room.capacity >= 5 %}
+                        <p><strong>Big room</strong></p>
+                    {% else %}
+                        <p><strong>Small room</strong></p>
+                    {% endif %}
 
-                {% if room.capacity >= 5 %}
-                    <p><strong>Big room</strong></p>
-                {% else %}
-                    <p><strong>Small room</strong></p>
-                {% endif %}
-
-                <a href="{% url 'room_detail' room.id %}" class="btn btn-primary">Details</a>
+                    <a href="{% url 'room_detail' room.id %}" class="btn btn-primary">Details</a>
+                </div>
             </div>
-        </div>
+        {% else %}
+            <div class="card" style="background-color : #c1bdb7">
+                <div class="card-body">
+
+                    <h5 class="card-title">{{ room.name|upper }}</h5>
+                    <p style="color : red"><strong>Reserved</strong></p>
+                    <p>Rating: <strong>{{ room.rating }}</strong>/5</p>
+                    {% if room.capacity >= 5 %}
+                        <p><strong>Big room</strong></p>
+                    {% else %}
+                        <p><strong>Small room</strong></p>
+                    {% endif %}
+
+                    <a href="{% url 'room_detail' room.id %}" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
     {% empty %}
     <p>There isn't any room.</p>

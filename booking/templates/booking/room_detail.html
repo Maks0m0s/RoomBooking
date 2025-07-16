@@ -2,18 +2,57 @@
 {% load static %}
 
 {% block content %}
-<div class="card shadow">
-    <div class="card-body">
-        <h3 class="card-title">{{ room.name }}</h3>
-        <p class="card-text">Category: {{ room.category.name }}</p>
-        <p class="card-text">Capacity: {{ room.capacity }}</p>
-        {% if room.photo %}
-            <img src="{{ room.photo.url }}" alt="Room Photo" height="400px" width="auto">
-        {% else %}
-            <p>(No photo available.)</p>
-        {% endif %}
-        <p class="card-text description">Description: {{ room.description }}</p>
-        <a href="{% url 'rooms_by_category' room.category.id %}" class="btn btn-primary">Back</a>
+{% if not room.reserved %}
+    <div class="card shadow">
+        <div class="card-body">
+            <h3 class="card-title">{{ room.name }}</h3>
+            <p class="card-text">Category: {{ room.category.name }}</p>
+            <p class="card-text">State: <span style="color : green; font-weight: bold">Free</span></p>
+            <p class="card-text">Capacity: {{ room.capacity }}</p>
+            <p class="card-text">Rating: <strong>{{ room.rating }}</strong>/5</p>
+            {% if room.photo %}
+                <img src="{{ room.photo.url }}" alt="Room Photo" height="400px" width="auto">
+            {% else %}
+                <p>(No photo available.)</p>
+            {% endif %}
+            <div class="equipment">
+                <ul class="card-text" style="font-weight: bold">Equipment:
+                    {% for equipment in room.equipment.all %}
+                        <li class="card-text">{{ equipment.name }}</li>
+                    {% empty %}
+                        <li class="card-text">No equipment.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <p class="card-text description">Description: {{ room.description }}</p>
+            <a href="{% url 'rooms_by_category' room.category.id %}" class="btn btn-primary">Back</a>
+        </div>
     </div>
-</div>
+{% else %}
+    <div class="card shadow" style="background-color : #c1bdb7">
+        <div class="card-body">
+            <h3 class="card-title">{{ room.name }}</h3>
+            <p class="card-text">Category: {{ room.category.name }}</p>
+            <p class="card-text">State: <span style="color : red; font-weight: bold">Reserved</span></p>
+            <p class="card-text">Capacity: {{ room.capacity }}</p>
+            <p class="card-text">Rating: <strong>{{ room.rating }}</strong>/5</p>
+            {% if room.photo %}
+                <img src="{{ room.photo.url }}" alt="Room Photo" height="400px" width="auto">
+            {% else %}
+                <p>(No photo available.)</p>
+            {% endif %}
+            <div class="equipment">
+                <ul class="card-text" style="font-weight: bold">Equipment:
+                    {% for equipment in room.equipment.all %}
+                        <li class="card-text">{{ equipment.name }}</li>
+                    {% empty %}
+                        <li class="card-text">No equipment.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <p class="card-text description">Description: {{ room.description }}</p>
+            <a href="{% url 'rooms_by_category' room.category.id %}" class="btn btn-primary">Back</a>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}
