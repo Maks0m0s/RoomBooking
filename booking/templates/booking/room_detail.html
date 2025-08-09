@@ -25,7 +25,10 @@
                 </ul>
             </div>
             <p class="card-text description">Description: {{ room.description }}</p>
-            <a href="{% url 'rooms_by_category' room.category.id %}" class="btn btn-primary">Back</a>
+            <div class="two-buttons">
+                <a href="{% url 'make_booking' room.id %}" class="btn btn-primary">Make Booking</a>
+                <a href="{% url 'rooms_by_category' room.category.id %}" class="btn btn-primary">Back</a>
+            </div>
         </div>
     </div>
 {% else %}

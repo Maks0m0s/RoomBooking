@@ -1,0 +1,18 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+
+<div class="card register-card" style="padding:15px">
+    <h2 class="card-title">-- Registration --</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="button-box">
+            <button type="submit" class="btn btn-primary enter-b">Enter</button>
+            <a onclick="window.history.back();" class="btn btn-secondary home-b">Go Back</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

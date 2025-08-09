@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'booking/base.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="card shadow-lg p-5 rounded text-center" style="background-color: #f4f9ff; ">
+    <h2 class="card-title text-success fw-bold mb-3">🎉 Congratulations!</h2>
+    <h4 class="card-text text-dark mb-4">Your room has been successfully booked.</h4>
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg px-4">🏠 Home</a>
+        <a href="{% url 'my_bookings' %}" class="btn btn-primary btn-lg px-4">📖 My Bookings</a>
+    </div>
+</div>
+{% endblock %}

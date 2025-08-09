@@ -1,0 +1,49 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+<div class="card shadow-lg p-5 rounded my_bookings-card" style="background-color: #f9fbff;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="display-6 fw-bold text-primary mb-0">📅 My Bookings</h2>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">🔙 Go Back</a>
+    </div>
+
+    {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm rounded">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Room</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">End Time</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.room.name }}</td>
+                            <td>{{ booking.date }}</td>
+                            <td>{{ booking.start_time }}</td>
+                            <td>{{ booking.end_time }}</td>
+                            <td>
+                                <form method="post" action="{% url 'delete_booking' booking.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this booking?');">
+                                        🗑️ Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-4 shadow-sm">
+            <p class="mb-0">You haven’t made any bookings yet. Explore rooms and book your first one!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
