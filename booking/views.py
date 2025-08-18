@@ -1,86 +1,68 @@
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from crypt import methods
+from http.client import responses
+
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from .models import Room, Category, Booking
-from .forms import BookingForm
+from .models import Room, Booking, Category
+from .serializers import RoomSerializer, BookingSerializer, CategorySerializer, JWTLoginSerializer, JWTRefreshSerializer, JWTRegistrationSerializer
 
+class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-@login_required
-def make_booking(request, room_id):
-    room = get_object_or_404(Room, id=room_id)
+    @action(detail=False, methods=['get'], url_path='category/(?P<category_id>[^/.]+)')
+    def list_by_category(self, request, category_id=None):
+        category = get_object_or_404(Category, id=category_id)
+        rooms = category.rooms.all()
+        serializer = self.get_serializer(rooms, many=True)
+        return Response(serializer.data)
 
-    if request.method == 'POST':
-        form = BookingForm(request.POST, initial={'room': room})
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.room = room
-            booking.user = request.user
-            booking.save()
-            messages.success(request, "Booking completed successfully!")
-            return redirect('booking_success')
-    else:
-        form = BookingForm(initial={'room': room})
+class BookingViewSet(viewsets.ModelViewSet):
+    serializer_class = BookingSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    return render(request, 'booking/make_booking.html', {'room': room, 'form': form})
+    def get_queryset(self):
+        return Booking.objects.filter(user=self.request.user)
 
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Registration was successful. Now log in into the system.")
-            return redirect('login')
-    else:
-        form = UserCreationForm()
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-    return render(request, 'booking/register.html', {'form':form})
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
 
-@login_required
-def my_bookings(request):
-    bookings = Booking.objects.filter(user=request.user)
-    return render(request, 'booking/my_bookings.html', {'bookings': bookings})
+class HomeViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def list(self, request):
+        today = timezone.now().date()
+        bookings = Booking.objects.filter(user=request.user, date=today)
+        serializer = BookingSerializer(bookings, many=True)
+        return Response({"today": today, "bookings": serializer.data})
 
-@login_required
-def delete_booking(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    booking.delete()
-    messages.success(request, "Booking deleted successfully.")
+class AuthViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.AllowAny]
 
-    # Redirect to the page the request came from
-    next_url = request.POST.get('next')
-    if next_url:
-        return redirect(next_url)
-    return redirect('my_bookings')  # fallback
+    @action(detail=False, methods=["post"], url_path='login')
+    def login(self, request):
+        serializer = JWTLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post"], url_path='register')
+    def register(self, request):
+        serializer = JWTRegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.save(), status=status.HTTP_201_CREATED)
 
-def get_categories(request):
-    categories = Category.objects.all()
-    return render(request, 'booking/categories_list.html', {'categories': categories})
-
-
-def rooms_by_category(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-    rooms = category.rooms.all()
-    return render(request, 'booking/rooms_list.html', {'rooms': rooms, 'category': category})
-
-
-def get_room(request, room_id):
-    room = get_object_or_404(Room, id=room_id)
-    return render(request, 'booking/room_detail.html', {'room': room})
-
-def home(request):
-    today = timezone.now().date()
-    bookings = []
-
-    if request.user.is_authenticated:
-        bookings = Booking.objects.filter(
-            user=request.user,
-            date=today
-        )
-
-    return render(request, 'booking/home.html', {'today': today, 'bookings': bookings})
+    @action(detail=False, methods=["post"], url_path='refresh_token')
+    def refresh(self, request):
+        serializer = JWTRefreshSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
