@@ -1,68 +1,8 @@
-from os import write
-
 from rest_framework import serializers
-from .models import Room, Booking, Category, Equipment
-from datetime import date
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from django.contrib.auth.models import User
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name']
-
-class EquipmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Equipment
-        fields = ['id', 'name']
-
-class RoomSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    equipment = EquipmentSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Room
-        fields = [
-            'id', 'name', 'rating', 'capacity', 'description',
-            'photo', 'equipment', 'category', 'reserved'
-        ]
-
-class BookingSerializer(serializers.ModelSerializer):
-    room = RoomSerializer(read_only=True)
-    room_id = serializers.PrimaryKeyRelatedField(
-        queryset=Room.objects.all(),
-        source='room',
-        write_only=True
-    )
-
-    class Meta:
-        model = Booking
-        fields = ['id', 'room', 'room_id', 'date', 'start_time', 'end_time']
-
-    def validate(self, data):
-        booking_date = data.get('date')
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        room = data.get('room')
-
-        if booking_date and booking_date < date.today():
-            raise serializers.ValidationError("Date cannot be in the past.")
-        if start_time and end_time and start_time >= end_time:
-            raise serializers.ValidationError("End time must be after start time.")
-
-        if booking_date and start_time and end_time and room:
-            conflicts = Booking.objects.filter(
-                room=room,
-                date=booking_date,
-                start_time__lt=end_time,
-                end_time__gt=start_time
-            )
-            if conflicts.exists():
-                raise serializers.ValidationError("This time slot is already booked.")
-
-        return data
 
 class JWTLoginSerializer(serializers.Serializer):
     username = serializers.CharField()

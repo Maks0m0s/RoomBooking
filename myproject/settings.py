@@ -133,6 +133,30 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'maksym.kozlovskyi150210@gmail.com'
+EMAIL_HOST_PASSWORD = 'zpkk mjxe mbiz rgxq'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Madrid'
+CELERY_ENABLE_UTC = False
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "check-bookings-every-5-mins": {
+        "task": "booking.tasks.check_bookings",
+        "schedule": 300,  # every 5 minutes
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
