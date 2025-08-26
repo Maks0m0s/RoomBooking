@@ -11,10 +11,11 @@ class BookingSerializer(serializers.ModelSerializer):
         source='room',
         write_only=True
     )
+    confirmed = serializers.BooleanField(default=False, read_only=True)
 
     class Meta:
         model = Booking
-        fields = ['id', 'room', 'room_id', 'date', 'start_time', 'end_time']
+        fields = ['id', 'room', 'room_id', 'date', 'start_time', 'end_time', 'confirmed']
 
     def validate(self, data):
         booking_date = data.get('date')
