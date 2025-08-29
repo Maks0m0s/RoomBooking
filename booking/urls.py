@@ -9,8 +9,11 @@ from booking.api import (
     categories_views,
     home_views,
     rooms_views,
-    rating_views
+    rating_views,
+    openai_views
 )
+
+from booking.views import LangChainViewSet
 
 router = DefaultRouter()
 router.register(r'rooms', rooms_views.RoomViewSet, basename='rooms')
@@ -19,6 +22,8 @@ router.register(r'categories', categories_views.CategoryViewSet, basename='categ
 router.register(r'home', home_views.HomeViewSet, basename='home')
 router.register(r'auth', auth_views.AuthViewSet, basename='auth')
 router.register(r'rating', rating_views.RatingViewSet, basename='rating')
+router.register(r'openai', openai_views.OpenAIViewSet, basename='openai')
+router.register(r'langchain', LangChainViewSet, basename='langchain')
 
 urlpatterns = [
     path('', include(router.urls)),

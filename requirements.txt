@@ -4,3 +4,7 @@ Pillow
 djangorestframework-simplejwt
 djangorestframework
 celery[redis]
+openai
+langchain[all]
+langchain_community
+python-dotenv
