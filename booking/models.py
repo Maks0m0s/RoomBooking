@@ -36,7 +36,13 @@ class Booking(models.Model):
 
 
 class Rating(models.Model):
-    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name="ratings")
+    booking = models.ForeignKey(
+        Booking,
+        on_delete=models.SET_NULL,
+        related_name="ratings",
+        null=True,  # ✅ allow null
+        blank=True  # optional, for forms/admin
+    )
     stars = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)],
         default=1,

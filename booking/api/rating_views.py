@@ -24,6 +24,6 @@ class RatingViewSet(viewsets.ModelViewSet):
             permission_classes=[permissions.AllowAny])
     def get_room_ratings(self, request, room_id=None):
         room = get_object_or_404(Room, id=room_id)
-        ratings = Rating.objects.filter(booking__room=room)
+        ratings = room.rating
         serializer = self.get_serializer(ratings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
